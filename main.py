@@ -34,6 +34,11 @@ async def disconnect(ctx):
   # else:
   #   await ctx.send("the bot is not connect")
 
+#Stop
+async def stop(ctx):
+  voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+  voice.stop()
+ 
 #Pause
 @client.command()
 async def pause(ctx):
@@ -56,10 +61,55 @@ async def resume(ctx):
     print("voice no resume")
     # await ctx.send("voice no resume")
 
-#Stop
-async def stop(ctx):
-  voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-  voice.stop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# @client.command()
+# async def hello(self,ctx):
+#   await ctx.send('hello1 ')
+
+# client=discord.Client()
+#Command
+# @client.event
+# async def on_ready():
+#     print('We have logged in as {0.user}'
+#     .format(client))
+
+# @client.event
+# async def on_message(message):
+#     if message.author == client.user:
+#         return
+
+#     if message.content.startswith('/command'):
+#       await message.channel.send('command')
+
  
+
   
 client.run(TOKEN)
