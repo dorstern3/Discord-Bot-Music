@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 # TOKEN
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
-print(TOKEN)
 
 bot = commands.Bot(command_prefix="/")
 
@@ -26,7 +25,7 @@ async def connect(ctx):
 
 # Play music
 @bot.command()
-async def play(ctx, url_: str):
+async def play(ctx, url: str):
   song = os.path.isfile("song.mp3")
   try:
       if song:
@@ -35,7 +34,7 @@ async def play(ctx, url_: str):
       await ctx.send("Wait for the current playing music to end or use the 'stop' command")
       return
 
-  # voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+  voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
 
   ydl_opts = {
         'format': 'bestaudio/best',
