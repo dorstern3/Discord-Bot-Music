@@ -1,3 +1,5 @@
+# 1. fix bot and play without download
+
 import discord
 import os
 # youtube
