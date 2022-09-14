@@ -15,7 +15,9 @@ import asyncio
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
-bot = commands.Bot(command_prefix="/")
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix="/", intents=intents)
 
 # Connect voice Channel
 @bot.command()
@@ -77,10 +79,7 @@ async def play(ctx, url: str):
   
   #check if bot is connected to voice channel.
   voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-  if not voice_client.is_connected():
-    voice.play(audio)
-  else:
-    await ctx.send("Wait for the current playing music to end or use the 'stop' command")
+  voice.play(audio)
 
 # Disconnect voice Channel
 @bot.command()
