@@ -8,12 +8,16 @@ import youtube_dl
 from discord.ext import commands
 # TOKEN
 from dotenv import load_dotenv
+#Asyncio
+import asyncio
 
 # TOKEN
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
-bot = commands.Bot(command_prefix="/")
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix="/", intents=intents)
 
 # Connect voice Channel
 @bot.command()
@@ -28,31 +32,54 @@ async def connect(ctx):
 # Play music
 @bot.command()
 async def play(ctx, url: str):
-  song = os.path.isfile("song.mp3")
-  try:
-      if song:
-          os.remove("song.mp3")
-  except PermissionError:
-      await ctx.send("Wait for the current playing music to end or use the 'stop' command")
-      return
+  
 
   voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
 
-  ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-    }
+  #Streaming
+  class YTDLSource(discord.PCMVolumeTransformer):
+    def __init__(self, source, *, data, volume=0.5):
+        super().__init__(source, volume)
 
-  with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
-  for file in os.listdir("./"):
-        if file.endswith(".mp3"):
-            os.rename(file, "song.mp3")
-  voice.play(discord.FFmpegPCMAudio("song.mp3"))
+        self.data = data
+
+        self.title = data.get('title')
+        self.url = data.get('url')
+    @classmethod
+    async def from_url(cls, url, *, loop=None, stream=False):
+        youtube_dl.utils.bug_reports_message = lambda: ''
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+            'restrictfilenames': True,
+            'noplaylist': True,
+            'nocheckcertificate': True,
+            'ignoreerrors': False,
+            'logtostderr': False,
+            'quiet': True,
+            'no_warnings': True,
+            'default_search': 'auto',
+            'source_address': '0.0.0.0'
+        }
+        ffmpeg_options = {
+            'options': '-vn',
+        }
+        ytdl = youtube_dl.YoutubeDL(ydl_opts)
+        loop = loop or asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
+        if 'entries' in data:
+            # take first item from a playlist
+            data = data['entries'][0]
+
+        filename = data['url'] if stream else ytdl.prepare_filename(data)
+        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+  
+  #get a stream
+  audio = await YTDLSource.from_url(url=url, loop=bot.loop, stream=True)
+  
+  #check if bot is connected to voice channel.
+  voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
+  voice.play(audio)
 
 # Disconnect voice Channel
 @bot.command()
