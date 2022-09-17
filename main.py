@@ -28,7 +28,7 @@ async def connect(ctx):
   await voiceChannel.connect()
   await ctx.send("Connect voice channel")
   # help
-  await ctx.send("Command !help to Command Manual ")
+  await ctx.send("Command !help to Command Manual")
 
 # Help -> Command Manual
 @bot.command(name='help')
@@ -42,13 +42,13 @@ async def help(ctx):
   # diconnect
   embed.add_field(name='!diconnect', value='diconnect voice channel', inline=False)
   # play
-  embed.add_field(name='!play', value='play music', inline=False)
+  embed.add_field(name='!play + url of the audio', value='play audio', inline=False)
   # stop
-  embed.add_field(name='!stop', value='stop music', inline=False)
+  embed.add_field(name='!stop', value='stop audio', inline=False)
   # pause
-  embed.add_field(name='!pause', value='pause music', inline=False)
+  embed.add_field(name='!pause', value='pause audio', inline=False)
   # resume
-  embed.add_field(name='!resume', value='resume music', inline=False)
+  embed.add_field(name='!resume', value='resume audio', inline=False)
   await ctx.send(embed=embed)
 
 # Play music
@@ -99,7 +99,7 @@ async def play(ctx, url: str):
   if not voice_client.is_connected():
     voice.play(audio)
   else:
-    await ctx.send("Wait for the music to start")
+    await ctx.send("Wait for the audio to start")
   voice.play(audio)
 
 # Disconnect voice Channel
@@ -109,8 +109,6 @@ async def disconnect(ctx):
   if voice.is_connected():
    await voice.disconnect()
    await ctx.send("Disconnect voice channel")
-  else:
-   await ctx.send("The Music-Bot is not connected to a voice channel")
 
 #Stop
 @bot.command()
