@@ -5,7 +5,7 @@ https://user-images.githubusercontent.com/96941609/192587405-5188a013-98e7-432e-
 
 
 ## Add Enviroment Variable (.env file):
-- add the file **.env** and **edit** according to your TOKEN variable.
+- add the file **.env** and **edit** according to your **TOKEN** variable.
 
 ## Install:
 - python -m pip install dotenv
